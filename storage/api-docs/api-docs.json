@@ -1,0 +1,70 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "OpenApi Documentation",
+        "description": "Документация для микро сервиса",
+        "contact": {
+            "email": "hello@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1",
+            "description": "Основной API"
+        }
+    ],
+    "paths": {
+        "/task/{task}": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "получение статуса задания",
+                "description": "Метод возвращает данные ...",
+                "operationId": "getListAvailableChannel",
+                "parameters": [
+                    {
+                        "name": "task",
+                        "in": "path",
+                        "description": "id задания",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Group": {
+                "title": "Group",
+                "description": "Group model",
+                "xml": {
+                    "name": "Group"
+                }
+            },
+            "Task": {
+                "title": "Task",
+                "description": "Task model",
+                "xml": {
+                    "name": "Task"
+                }
+            }
+        }
+    }
+}
