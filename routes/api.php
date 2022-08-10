@@ -24,6 +24,7 @@ Route::get('/task/{task}', [TaskController::class, 'status']);
 Route::get('/taskAll', [TaskController::class, 'statusAll']);
 Route::post('/task', [TaskController::class, 'store']);
 Route::post('/taskstop', [TaskController::class, 'stopTask']);
+Route::post('/taskstart', [TaskController::class, 'startTask']);
 Route::post('/group', [GroupController::class, 'makeGroup']);
 Route::post('/groupstart', [GroupController::class, 'startGroup']);
 Route::post('/groupstop', [GroupController::class, 'stopGroup']);

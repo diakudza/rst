@@ -19,7 +19,7 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['frequency', 'string', 'repetitions', 'salt', 'status', 'group_id', 'start_time'];
+    protected $fillable = ['frequency', 'string', 'repetitions', 'salt', 'status', 'group_id', 'hash'];
 
     public function group()
     {

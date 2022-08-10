@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\TaskHashHelper;
+use App\Helpers\TaskHelper;
+use App\Jobs\StartTask;
 use App\Models\Group;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -40,7 +43,6 @@ class TaskController extends Controller
                 break;
             case 1:
                 $status = 'active';
-                $startTime = $task->start_time;
                 break;
             case 2:
                 $status = 'finish';
@@ -48,11 +50,24 @@ class TaskController extends Controller
         }
 
         return response()->json([
-            'status' => $status,
-            'start_time' => $startTime ?? NULL
+            'status' => $status
         ], 200);
     }
+    /**
+     * @OA\Get(
+     *      path="/taskAll",
+     *      operationId="liastAllTask",
+     *      tags={"task"},
+     *      summary="Возвращает список всех заданий",
+     *      description="Метод возвращает данные ...",
 
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *     @OA\JsonContent(ref="#/components/schemas/Task")
+     *       ),
+     *     )
+     */
     public function statusAll(Request $request, Task $task)
     {
         return response()->json([
@@ -60,6 +75,21 @@ class TaskController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Post(
+     *      path="/task",
+     *      operationId="storeTask",
+     *      tags={"task"},
+     *      summary="создать задание",
+     *      description="Метод возвращает данные ...",
+
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *     @OA\JsonContent(ref="#/components/schemas/Task")
+     *       ),
+     *     )
+     */
     public function store(Task $task, Request $request)
     {
         $task->fill($request->all());
@@ -77,14 +107,14 @@ class TaskController extends Controller
         ], 200);
     }
 
-    /* public function status(Task $task, Group $group)
-     {
-         $group = $group->find(1);
-         foreach ($group->tasks as $task) {
-             echo $task;
-         }
-         return response()->json([
-             'message' => $task->all()
-         ], 200);
-     }*/
+    public function startTask(Task $task, Request $request)
+    {
+        $hash = TaskHashHelper::makeHash($task->find($request->task));
+        $task->find($request->task)->update(['status' => 1, 'hash' => $hash]);
+        StartTask::dispatch($task->find($request->task));
+        return response()->json([
+            'message' => 'task was started'
+        ], 200);
+    }
+
 }

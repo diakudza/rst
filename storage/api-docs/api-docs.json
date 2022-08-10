@@ -15,6 +15,138 @@
         }
     ],
     "paths": {
+        "/group": {
+            "post": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "созадать группу",
+                "description": "Метод возвращает данные ...",
+                "operationId": "makeGroup",
+                "parameters": [
+                    {
+                        "name": "group",
+                        "in": "path",
+                        "description": "id группы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Group"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/groupstart": {
+            "post": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "запустить задачи в группе",
+                "description": "Метод возвращает данные ...",
+                "operationId": "startGroup",
+                "parameters": [
+                    {
+                        "name": "group",
+                        "in": "path",
+                        "description": "id группы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Group"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/groupstop": {
+            "post": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "остановить задачи в группе",
+                "description": "Метод возвращает данные ...",
+                "operationId": "stopGroup",
+                "parameters": [
+                    {
+                        "name": "group",
+                        "in": "path",
+                        "description": "id группы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Group"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/group/{group}": {
+            "get": {
+                "tags": [
+                    "group"
+                ],
+                "summary": "получение статуса группы",
+                "description": "Метод возвращает данные ...",
+                "operationId": "getGroupStatus",
+                "parameters": [
+                    {
+                        "name": "group",
+                        "in": "path",
+                        "description": "id группы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Group"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/task/{task}": {
             "get": {
                 "tags": [
@@ -34,6 +166,50 @@
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/taskAll": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Возвращает список всех заданий",
+                "description": "Метод возвращает данные ...",
+                "operationId": "liastAllTask",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/task": {
+            "post": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "создать задание",
+                "description": "Метод возвращает данные ...",
+                "operationId": "storeTask",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
