@@ -28,7 +28,7 @@ class Task extends Model
 
     public function statusAll()
     {
-        return $this->select('id', 'status', 'start_time')->get();
+        return $this->select('id', 'status')->get();
     }
 
 }

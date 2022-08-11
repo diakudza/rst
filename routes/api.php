@@ -21,11 +21,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/task/{task}', [TaskController::class, 'status']);
-Route::get('/taskAll', [TaskController::class, 'statusAll']);
-Route::post('/task', [TaskController::class, 'store']);
-Route::post('/taskstop', [TaskController::class, 'stopTask']);
-Route::post('/taskstart', [TaskController::class, 'startTask']);
-Route::post('/group', [GroupController::class, 'makeGroup']);
-Route::post('/groupstart', [GroupController::class, 'startGroup']);
-Route::post('/groupstop', [GroupController::class, 'stopGroup']);
-Route::get('/groupstatus/{group}', [GroupController::class, 'statusGroup']);
+Route::get('/task-all', [TaskController::class, 'statusAll']);
+Route::post('/task-store', [TaskController::class, 'store']);
+Route::post('/task-update', [TaskController::class, 'update']);
+Route::post('/task-stop', [TaskController::class, 'stop']);
+Route::post('/task-start', [TaskController::class, 'start']);
+
+Route::post('/group-store', [GroupController::class, 'store']);
+Route::post('/group-start', [GroupController::class, 'start']);
+Route::post('/group-stop', [GroupController::class, 'stop']);
+Route::get('/group-status/{group}', [GroupController::class, 'status']);

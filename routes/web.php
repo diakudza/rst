@@ -14,5 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', [
+        'allTask' => \App\Models\Task::all(),
+        'groups' => \App\Models\Group::all(),
+    ]);
 });

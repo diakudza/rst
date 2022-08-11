@@ -2,48 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\TaskDispatcher;
 use App\Helpers\TaskHelper;
 use App\Http\Requests\GroupStore;
-use App\Jobs\StartTask;
 use App\Models\Group;
 use App\Models\Task;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Mockery\Exception;
+use Illuminate\Support\Facades\Validator;
 
 
 class GroupController extends Controller
 {
 
-    /**
-     * @OA\Post(
-     *      path="/group",
-     *      operationId="makeGroup",
-     *      tags={"group"},
-     *      summary="созадать группу",
-     *      description="Метод возвращает данные ...",
-     *     @OA\Parameter(
-     *          name="group",
-     *          description="id группы",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/Group")
-     *       ),
-     *     )
-     */
-    public function makeGroup(GroupStore $request, Group $group, Task $task)
+    public function store(Request $request, Group $group, Task $task)
     {
-        $group->fill($request->validated());
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|min:5|max:100',
+            'tasks' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->messages(), 400);
+        }
+        $group->fill($validator->validated());
         $group->save();
         $groupId = $group->id;
-        $tasks = $request->task;
+        $tasks = $validator->validated()['tasks'];
         foreach ($tasks as $id) {
             $task = $task->find($id);
             $task->group_id = $groupId;
@@ -55,37 +39,22 @@ class GroupController extends Controller
         ], 200);
     }
 
-
-    /**
-     * @OA\Post(
-     *      path="/groupstart",
-     *      operationId="startGroup",
-     *      tags={"group"},
-     *      summary="запустить задачи в группе",
-     *      description="Метод возвращает данные ...",
-     *     @OA\Parameter(
-     *          name="group",
-     *          description="id группы",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/Group")
-     *       ),
-     *     )
-     */
-    public function startGroup(Request $request, Group $group)
+    public function start(Request $request, Group $group)
     {
+        $validator = Validator::make($request->all(), [
+            'group_id' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->messages(), 400);
+        }
+
         $group = $group->find($request->group_id);
+
         $group->update(['status' => 1]);
+
         foreach ($group->tasks as $task) {
-            TaskHelper::start($task);
-            StartTask::dispatch($task);
+            TaskDispatcher::dispatch($task);
         }
 
         return response()->json([
@@ -93,31 +62,16 @@ class GroupController extends Controller
         ], 200);
     }
 
-    /**
-     * @OA\Post(
-     *      path="/groupstop",
-     *      operationId="stopGroup",
-     *      tags={"group"},
-     *      summary="остановить задачи в группе",
-     *      description="Метод возвращает данные ...",
-     *     @OA\Parameter(
-     *          name="group",
-     *          description="id группы",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/Group")
-     *       ),
-     *     )
-     */
-    public function stopGroup(Request $request, Group $group)
+    public function stop(Request $request, Group $group)
     {
+        $validator = Validator::make($request->all(), [
+            'group_id' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->messages(), 400);
+        }
+
         $group = $group->find($request->group_id);
         $group->update(['status' => 0]);
         foreach ($group->tasks as $task) {
@@ -129,30 +83,7 @@ class GroupController extends Controller
         ], 200);
     }
 
-    /**
-     * @OA\Get(
-     *      path="/group/{group}",
-     *      operationId="getGroupStatus",
-     *      tags={"group"},
-     *      summary="получение статуса группы",
-     *      description="Метод возвращает данные ...",
-     *     @OA\Parameter(
-     *          name="group",
-     *          description="id группы",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/Group")
-     *       ),
-     *     )
-     */
-    public function statusGroup(Group $group)
+    public function status(Group $group)
     {
         return response()->json([
             'status' => $group->status

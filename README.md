@@ -1,47 +1,9 @@
-Api Documentation
+Запуск через laravel sail
 
+````
+composer install
+./vendor/bin/sail build
+./vendor/bin/sail up
+````
 
-``
-GET: /api/task/{tast}
-``
-Статуст задачи task = int
-
-``
-GET: /api/taskAll
-``
-Получить все задачи (все поля)
-
-``
-POST: /api/task
-``
-Добавить задачу. Обязательные поля: 
-
-``
-POST: /api/taskstop
-``
-Остановить задачу
-
-``
-POST: /api/taskstart
-``
-Запустить задачу
-
-``
-POST: /api/group
-``
-Создать группу
-
-``
-POST: /api/groupstart
-``
-Запустить группу
-
-``
-POST: /api/groupstop
-``
-Остановить группу
-
-``
-GET: /api/groupstatus/{group}
-``
-Статус группы
+Роуты реализовал

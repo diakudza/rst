@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Helpers\TaskHashHelper;
 use App\Helpers\TaskHelper;
 use App\Models\Task;
 use Illuminate\Bus\Queueable;
@@ -15,16 +16,18 @@ class StartTask implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 5;
     protected $task;
+    protected $i;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Task $task)
+    public function __construct(Task $task, $i)
     {
         $this->task = $task;
+        $this->i = $i;
     }
 
     /**
@@ -34,6 +37,7 @@ class StartTask implements ShouldQueue
      */
     public function handle()
     {
-        TaskHelper::start($this->task);
+            $hash = TaskHashHelper::makeHash($this->task);
+            $this->task->update(['status' => $this->i, 'hash' => $hash]);
     }
 }

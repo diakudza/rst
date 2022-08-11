@@ -2,38 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\TaskDispatcher;
 use App\Helpers\TaskHashHelper;
 use App\Helpers\TaskHelper;
 use App\Jobs\StartTask;
 use App\Models\Group;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-    /**
-     * @OA\Get(
-     *      path="/task/{task}",
-     *      operationId="getListAvailableChannel",
-     *      tags={"task"},
-     *      summary="получение статуса задания",
-     *      description="Метод возвращает данные ...",
-     *     @OA\Parameter(
-     *          name="task",
-     *          description="id задания",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/Task")
-     *       ),
-     *     )
-     */
 
     public function status(Task $task)
     {
@@ -53,21 +33,7 @@ class TaskController extends Controller
             'status' => $status
         ], 200);
     }
-    /**
-     * @OA\Get(
-     *      path="/taskAll",
-     *      operationId="liastAllTask",
-     *      tags={"task"},
-     *      summary="Возвращает список всех заданий",
-     *      description="Метод возвращает данные ...",
 
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/Task")
-     *       ),
-     *     )
-     */
     public function statusAll(Request $request, Task $task)
     {
         return response()->json([
@@ -75,31 +41,40 @@ class TaskController extends Controller
         ], 200);
     }
 
-    /**
-     * @OA\Post(
-     *      path="/task",
-     *      operationId="storeTask",
-     *      tags={"task"},
-     *      summary="создать задание",
-     *      description="Метод возвращает данные ...",
-
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *     @OA\JsonContent(ref="#/components/schemas/Task")
-     *       ),
-     *     )
-     */
-    public function store(Task $task, Request $request)
+    public function update(Request $request, Task $task)
     {
-        $task->fill($request->all());
-        $task->save();
+        $task->find($request->task)->update(['group_id' => $request->group_id]);
         return response()->json([
-            'message' => 'task was created'
+            'message' => 'task was updated'
         ], 200);
     }
 
-    public function stopTask(Task $task, Request $request)
+
+    public function store(Task $task, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'string' => 'required|min:10',
+            'frequency' => 'required|integer|between:1000,4000',
+            'repetitions' => 'required|integer|between:1,20',
+            'group_id' => 'integer',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->messages(), 400);
+        }
+        $task->fill($request->all());
+        if ($task->save()) {
+            return response()->json([
+                'message' => 'task was created'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'task was NOT created'
+            ], 400);
+        }
+
+    }
+
+    public function stop(Task $task, Request $request)
     {
         $task->find($request->task)->update(['status' => 0]);
         return response()->json([
@@ -107,11 +82,17 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function startTask(Task $task, Request $request)
+    public function start(Task $task, Request $request)
     {
-        $hash = TaskHashHelper::makeHash($task->find($request->task));
-        $task->find($request->task)->update(['status' => 1, 'hash' => $hash]);
-        StartTask::dispatch($task->find($request->task));
+        $validator = Validator::make($request->all(), [
+            'task' => 'required|integer|min:0',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->messages(), 400);
+        }
+        TaskDispatcher::dispatch($task->find($request->task));
+        //$task->find($request->task)->update(['status' => 0]);
+
         return response()->json([
             'message' => 'task was started'
         ], 200);
